@@ -1,0 +1,85 @@
+# Flutter/Dart/Pub related
+.dart_tool/
+.packages
+.pub-cache/
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+.flutter-versions
+flutter_export_environment.sh
+generated_plugin_registrant.dart
+
+# IntelliJ related
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# VS Code related
+.vscode/
+*.code-workspace
+
+# Android related
+android/.gradle/
+android/captures/
+android/gradlew
+android/gradlew.bat
+android/local.properties
+android/app/proguard-rules.pro
+android/app/key.properties
+
+# iOS related
+ios/Flutter/Generated.xcconfig
+ios/Pods/
+ios/Runner.xcworkspace
+ios/build/
+ios/.symlinks/
+ios/Flutter/App.framework
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+
+# Xcode related
+*.xcworkspace
+*.xcuserdata
+*.xcuserstate
+ios/Flutter/Debug.xcconfig
+ios/Flutter/Release.xcconfig
+
+# Web related
+web/.dart_tool/
+web/flutter_export_environment.sh
+
+# Linux related
+linux/flutter/generated_plugin_registrant.cc
+
+# macOS related
+macos/Flutter/GeneratedPluginRegistrant.swift
+macos/Flutter/ephemeral/
+macos/Pods/
+macos/build/
+macos/Flutter/Flutter.podspec
+
+# Windows related
+windows/flutter/generated_plugin_registrant.cc
+
+# Other files
+*.log
+*.lock
+*.DS_Store
+*.pdb
+*.dll
+*.dmg
+*.exe
+*.so
+*.iso
+*.jar
+*.zip
+*.tar.gz
+*.bak
+*.tmp
+*.swp
+*.swo
+*.swn
+# Environment files
+.env
+.env.*
