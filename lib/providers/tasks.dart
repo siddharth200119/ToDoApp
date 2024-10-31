@@ -71,6 +71,8 @@ class TasksNotifier extends StateNotifier<List<Task>> {
       if (updates["dueDate"] != null && updates["dueDate"] is DateTime) {
         updates["dueDate"] = updates["dueDate"].toIso8601String();
       }
+      final List<cat_model.Category>? categories = updates["categories"];
+      updates.remove("categories");
 
       final response = await supabase
           .from('tasks')
@@ -90,13 +92,13 @@ class TasksNotifier extends StateNotifier<List<Task>> {
         dueDate: updatedTaskJson["dueDate"] != null
             ? DateTime.parse(updatedTaskJson["dueDate"])
             : null,
-        isCompleted: updatedTaskJson["isCompleted"],
+        isCompleted: updatedTaskJson["isCompleted"] ?? false,
       );
 
       // Update task categories if present in updates
-      if (updates["categories"] != null) {
+      if (categories != null) {
         final List<cat_model.Category> updatedCategories =
-            updates["categories"];
+            categories;
         // Clear existing categories for this task
         await supabase.from('task_categories').delete().eq("task_id", task.id);
 

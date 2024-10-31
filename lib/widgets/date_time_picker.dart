@@ -82,77 +82,79 @@ class _DateTimePickerState extends State<DateTimePicker> {
     return Dialog(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            isRepeating
-                ? const Column(
-                    children: [
-                      Text("Coming Soon"),
-                    ],
-                  )
-                : Column(
-                    children: [
-                      TableCalendar(
-                        focusedDay: _focusedDay,
-                        firstDay: _firstDay,
-                        lastDay: _lastDay,
-                        selectedDayPredicate: (day) =>
-                            isSameDay(_selectedDay, day),
-                        onDaySelected: (selectedDay, focusedDay) {
-                          setState(() {
-                            _selectedDay = selectedDay;
-                            _focusedDay = focusedDay;
-                          });
-                        },
-                        headerStyle: const HeaderStyle(
-                          formatButtonVisible: false,
-                          titleCentered: true,
-                        ),
-                      ),
-                      const SizedBox(height: 15),
-                      Container(
-                        decoration: const BoxDecoration(
-                          border: Border.symmetric(
-                            horizontal:
-                                BorderSide(width: 1, color: Colors.grey),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              isRepeating
+                  ? const Column(
+                      children: [
+                        Text("Coming Soon"),
+                      ],
+                    )
+                  : Column(
+                      children: [
+                        TableCalendar(
+                          focusedDay: _focusedDay,
+                          firstDay: _firstDay,
+                          lastDay: _lastDay,
+                          selectedDayPredicate: (day) =>
+                              isSameDay(_selectedDay, day),
+                          onDaySelected: (selectedDay, focusedDay) {
+                            setState(() {
+                              _selectedDay = selectedDay;
+                              _focusedDay = focusedDay;
+                            });
+                          },
+                          headerStyle: const HeaderStyle(
+                            formatButtonVisible: false,
+                            titleCentered: true,
                           ),
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            TextButton.icon(
-                              onPressed: openTimePicker,
-                              label: Text(_pickedTime != null
-                                  ? _pickedTime!.format(context)
-                                  : "Pick Time"),
-                              icon: const Icon(Icons.timer),
+                        const SizedBox(height: 15),
+                        Container(
+                          decoration: const BoxDecoration(
+                            border: Border.symmetric(
+                              horizontal:
+                                  BorderSide(width: 1, color: Colors.grey),
                             ),
-                            TextButton.icon(
-                              onPressed: togglePicker,
-                              icon: const Icon(Icons.repeat),
-                              label: const Text("Repeat"),
-                            ),
-                          ],
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              TextButton.icon(
+                                onPressed: openTimePicker,
+                                label: Text(_pickedTime != null
+                                    ? _pickedTime!.format(context)
+                                    : "Pick Time"),
+                                icon: const Icon(Icons.timer),
+                              ),
+                              TextButton.icon(
+                                onPressed: togglePicker,
+                                icon: const Icon(Icons.repeat),
+                                label: const Text("Repeat"),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 15),
-                    ],
+                        const SizedBox(height: 15),
+                      ],
+                    ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text("Cancel"),
                   ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: const Text("Cancel"),
-                ),
-                TextButton(
-                  onPressed: submit,
-                  child: const Text("Confirm"),
-                ),
-              ],
-            ),
-          ],
+                  TextButton(
+                    onPressed: submit,
+                    child: const Text("Confirm"),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

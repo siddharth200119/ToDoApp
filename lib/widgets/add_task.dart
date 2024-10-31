@@ -47,7 +47,11 @@ class _AddTaskState extends ConsumerState<AddTask> {
       widget.formKey.currentState!.save();
       result["dueDate"] = selectedDate;
       result["categories"] = categories;
-      ref.read(tasksProvider.notifier).addTask(result);
+      if(widget.task == null){
+        ref.read(tasksProvider.notifier).addTask(result);
+      }else{
+        ref.read(tasksProvider.notifier).updateTask(widget.task!, result);
+      }
       Navigator.of(context).pop();
     }
 
