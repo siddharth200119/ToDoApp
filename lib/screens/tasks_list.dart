@@ -39,8 +39,22 @@ class _TasksListState extends ConsumerState<TasksList> {
       return matchesCategory && matchesDueDate;
     }).toList();
 
-    final List<Task> completedTasks = tasks.where((task) => task.isCompleted).toList();
-    final List<Task> pendingTasks = tasks.where((task) => !task.isCompleted).toList();
+    // Separate and sort tasks
+    final List<Task> completedTasks = tasks.where((task) => task.isCompleted).toList()
+      ..sort((a, b) {
+        if (a.dueDate == null && b.dueDate == null) return 0;
+        if (a.dueDate == null) return 1;
+        if (b.dueDate == null) return -1;
+        return a.dueDate!.compareTo(b.dueDate!);
+      });
+
+    final List<Task> pendingTasks = tasks.where((task) => !task.isCompleted).toList()
+      ..sort((a, b) {
+        if (a.dueDate == null && b.dueDate == null) return 0;
+        if (a.dueDate == null) return 1;
+        if (b.dueDate == null) return -1;
+        return a.dueDate!.compareTo(b.dueDate!);
+      });
 
     if (tasks.isNotEmpty) {
       content = SingleChildScrollView(
@@ -61,7 +75,7 @@ class _TasksListState extends ConsumerState<TasksList> {
             ExpansionPanelList(
               expansionCallback: (int index, bool isExpanded) {
                 setState(() {
-                  _isExpanded = isExpanded;
+                  _isExpanded = !isExpanded;
                 });
               },
               elevation: 1,

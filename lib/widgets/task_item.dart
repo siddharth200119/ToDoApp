@@ -31,16 +31,16 @@ class TaskItem extends ConsumerWidget {
     if (dueDate != null) {
       if (isDueToday(dueDate)) {
         displayDateTime = DateFormat.jm().format(dueDate);
-      } else {
+      } else { 
         displayDateTime = DateFormat.yMMMd().format(dueDate);
       }
 
       dateTimeStyle = isOverdue(dueDate)
           ? TextStyle(color: Theme.of(context).colorScheme.error)
-          : TextStyle(color: Theme.of(context).colorScheme.onBackground);
+          : TextStyle(color: Theme.of(context).colorScheme.onSurface);
     } else {
       displayDateTime = "No due date";
-      dateTimeStyle = TextStyle(color: Theme.of(context).colorScheme.onBackground);
+      dateTimeStyle = TextStyle(color: Theme.of(context).colorScheme.onSurface);
     }
 
     return InkWell(

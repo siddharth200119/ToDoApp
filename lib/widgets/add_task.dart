@@ -25,8 +25,8 @@ class _AddTaskState extends ConsumerState<AddTask> {
     super.initState();
     // Prefill values if the task is provided
     if (widget.task != null) {
-      selectedDate = widget.task?.dueDate;
-      categories = widget.task?.categories;
+      selectedDate = widget.task!.dueDate;
+      categories = widget.task!.categories;
     }
   }
 

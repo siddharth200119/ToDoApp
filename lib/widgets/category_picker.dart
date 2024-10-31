@@ -23,7 +23,7 @@ class _CategoryPickerState extends ConsumerState<CategoryPicker> {
 
   @override
   Widget build(BuildContext context) {
-    final selectedCategories = widget.selectedCategories ?? [];
+    List<Category> selectedCategories = List.from(widget.selectedCategories ?? []);
     final List<Category> categories = ref.watch(categoriesProvider);
 
     void updateSuggestions(String keyword) {
@@ -76,6 +76,7 @@ class _CategoryPickerState extends ConsumerState<CategoryPicker> {
                             onTap: () {
                               setState(() {
                                 if (!selectedCategories.contains(suggestion)) {
+                                  print("sidd $selectedCategories");
                                   selectedCategories.add(suggestion);
                                   widget.callback(selectedCategories);
                                 }

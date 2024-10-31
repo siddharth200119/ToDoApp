@@ -19,7 +19,7 @@ class TasksNotifier extends StateNotifier<List<Task>> {
 
   // Convert due date to ISO format if it exists
   if (task["dueDate"] != null && task["dueDate"] is DateTime) {
-    task["dueDate"] = task["dueDate"].toIso8601String();
+    task["dueDate"] = task["dueDate"].toUtc().toIso8601String();
   }
 
   // Insert task into the tasks table
@@ -46,7 +46,7 @@ class TasksNotifier extends StateNotifier<List<Task>> {
       title: taskJson["title"],
       desc: taskJson["description"],
       dueDate: taskJson["dueDate"] != null
-          ? DateTime.parse(taskJson["dueDate"])
+          ? DateTime.parse(taskJson["dueDate"]).toLocal()
           : null,
       isCompleted: false,
       categories: categories ?? [], // Add the list of categories here
@@ -69,7 +69,7 @@ class TasksNotifier extends StateNotifier<List<Task>> {
       }
 
       if (updates["dueDate"] != null && updates["dueDate"] is DateTime) {
-        updates["dueDate"] = updates["dueDate"].toIso8601String();
+        updates["dueDate"] = updates["dueDate"].toUtc().toIso8601String();
       }
       final List<cat_model.Category>? categories = updates["categories"];
       updates.remove("categories");
@@ -83,17 +83,6 @@ class TasksNotifier extends StateNotifier<List<Task>> {
       if (response.isEmpty) {
         return false;
       }
-
-      final updatedTaskJson = response[0];
-      final updatedTask = Task(
-        id: updatedTaskJson["id"],
-        title: updatedTaskJson["title"],
-        desc: updatedTaskJson["description"],
-        dueDate: updatedTaskJson["dueDate"] != null
-            ? DateTime.parse(updatedTaskJson["dueDate"])
-            : null,
-        isCompleted: updatedTaskJson["isCompleted"] ?? false,
-      );
 
       // Update task categories if present in updates
       if (categories != null) {
@@ -111,6 +100,18 @@ class TasksNotifier extends StateNotifier<List<Task>> {
           });
         }
       }
+
+      final updatedTaskJson = response[0];
+      final updatedTask = Task(
+        id: updatedTaskJson["id"],
+        title: updatedTaskJson["title"],
+        desc: updatedTaskJson["description"],
+        dueDate: updatedTaskJson["dueDate"] != null
+            ? DateTime.parse(updatedTaskJson["dueDate"]).toLocal()
+            : null,
+        isCompleted: updatedTaskJson["isCompleted"] ?? false,
+        categories: categories ?? []
+      );
 
       state = state.map((t) => t.id == task.id ? updatedTask : t).toList();
 
@@ -162,7 +163,7 @@ class TasksNotifier extends StateNotifier<List<Task>> {
           title: taskJson["title"],
           desc: taskJson["description"],
           dueDate: taskJson["dueDate"] != null
-              ? DateTime.parse(taskJson["dueDate"])
+              ? DateTime.parse(taskJson["dueDate"]).toLocal()
               : null,
           isCompleted: taskJson["isCompleted"] ?? false,
           categories: categories,

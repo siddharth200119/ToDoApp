@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:todo_app/models/task.dart';
+import 'package:todo_app/providers/tasks.dart';
 import 'package:todo_app/widgets/add_task.dart';
 import 'package:intl/intl.dart';
 
-class ViewTask extends StatelessWidget {
+class ViewTask extends ConsumerStatefulWidget {
   const ViewTask({super.key, required this.task});
   final Task task;
 
+  @override
+  ConsumerState<ViewTask> createState() {
+    return _ViewTaskState();
+  }
+}
+
+class _ViewTaskState extends ConsumerState<ViewTask> {
   bool isDueToday(DateTime dueDate) {
     final now = DateTime.now();
     return dueDate.year == now.year &&
@@ -20,6 +29,11 @@ class ViewTask extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final List<Task> tasks = ref.watch(tasksProvider);
+    Task task = tasks.where((t) {
+      return t.id == widget.task.id;
+    }).toList()[0];
+
     final dueDate = task.dueDate;
     final theme = Theme.of(context);
 
