@@ -75,7 +75,7 @@ class _TasksListState extends ConsumerState<TasksList> {
             ExpansionPanelList(
               expansionCallback: (int index, bool isExpanded) {
                 setState(() {
-                  _isExpanded = !isExpanded;
+                  _isExpanded = isExpanded;
                 });
               },
               elevation: 1,

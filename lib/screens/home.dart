@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:todo_app/providers/categories.dart';
+import 'package:todo_app/screens/settings.dart';
 import 'package:todo_app/screens/tasks_list.dart';
 import 'package:todo_app/widgets/add_task.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -31,12 +32,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       "icon": const Icon(Icons.checklist_rounded),
       "label": "To Do"
     },
-    // {
-    //   "title": "Settings",
-    //   "home": const TasksList(),
-    //   "icon": const Icon(Icons.menu),
-    //   "label": "Browse"
-    // }
+    {
+      "title": "Settings",
+      "home": const SettingsScreen(),
+      "icon": const Icon(Icons.menu),
+      "label": "Browse"
+    }
   ];
   late Map<String, dynamic> _currentTask;
 
