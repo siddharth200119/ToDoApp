@@ -11,20 +11,22 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final List<Category> categories = ref.watch(categoriesProvider);
 
-    return Column(
-      children: [
-        ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          padding: const EdgeInsets.all(8),
-          itemCount: categories.length,
-          itemBuilder: (context, index) {
-            return CategoryItem(
-              category: categories[index],
-            );
-          },
-        )
-      ],
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(8),
+            itemCount: categories.length,
+            itemBuilder: (context, index) {
+              return CategoryItem(
+                category: categories[index],
+              );
+            },
+          )
+        ],
+      ),
     );
   }
 }

@@ -84,8 +84,8 @@ ThemeData _buildDarkTheme() {
       primary: Colors.blueAccent,
       secondary: Colors.tealAccent,
       error: Colors.redAccent,
-      onPrimary: Colors.white,
-      onSecondary: Colors.black,
+      onPrimary: Colors.black,
+      onSecondary: Colors.white,
       surface: Colors.grey[850]!,
     ),
     textTheme: GoogleFonts.ubuntuTextTheme(base.textTheme).copyWith(
