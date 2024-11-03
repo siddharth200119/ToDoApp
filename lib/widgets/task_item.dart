@@ -31,7 +31,7 @@ class TaskItem extends ConsumerWidget {
     if (dueDate != null) {
       if (isDueToday(dueDate)) {
         displayDateTime = DateFormat.jm().format(dueDate);
-      } else { 
+      } else {
         displayDateTime = DateFormat.yMMMd().format(dueDate);
       }
 
@@ -59,24 +59,54 @@ class TaskItem extends ConsumerWidget {
         confirmDismiss: (direction) async {
           if (direction == DismissDirection.endToStart) {
             ref.read(tasksProvider.notifier).deleteTask(task);
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: const Text("Task Deleted Successfully"),
+                duration: const Duration(seconds: 3),
+                action: SnackBarAction(
+                  label: "Undo",
+                  onPressed: () {
+                    ref.read(tasksProvider.notifier).undoDelete();
+                  },
+                ),
+              ),
+            );
             return true;
           } else if (direction == DismissDirection.startToEnd) {
             ref
                 .read(tasksProvider.notifier)
-                .updateTask(task, {"isCompleted": true});
+                .updateTask(task, {"isCompleted": !task.isCompleted});
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(!task.isCompleted
+                    ? "Task Completed Successfully"
+                    : "Task Marked as Incomplete"),
+                duration: const Duration(seconds: 3),
+              ),
+            );
             return false;
           }
           return false;
         },
         background: Container(
-          color: Theme.of(context).colorScheme.secondary, // Swipe right background
+          color: !task.isCompleted
+              ? Theme.of(context).colorScheme.secondary
+              : Theme.of(context)
+                  .colorScheme
+                  .error, // Swipe right background
           alignment: Alignment.centerLeft,
           padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Icon(
-            Icons.check,
-            color: Theme.of(context).colorScheme.onSecondary,
-            size: 30,
-          ),
+          child: !task.isCompleted
+              ? Icon(
+                  Icons.check,
+                  color: Theme.of(context).colorScheme.onSecondary,
+                  size: 30,
+                )
+              : Icon(
+                  Icons.cancel_outlined,
+                  color: Theme.of(context).colorScheme.onSecondary,
+                  size: 30,
+                ),
         ),
         secondaryBackground: Container(
           color: Theme.of(context).colorScheme.error, // Swipe left background
@@ -118,9 +148,7 @@ class TaskItem extends ConsumerWidget {
                     Text(
                       task.title,
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        overflow: TextOverflow.ellipsis,
-                        fontSize: 20
-                      ),
+                          overflow: TextOverflow.ellipsis, fontSize: 20),
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -130,7 +158,8 @@ class TaskItem extends ConsumerWidget {
                           style: dateTimeStyle,
                         ),
                         Row(
-                          children: task.categories.asMap().entries.map((entry) {
+                          children:
+                              task.categories.asMap().entries.map((entry) {
                             return Text(
                               entry.key + 1 == task.categories.length
                                   ? entry.value.name

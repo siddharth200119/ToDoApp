@@ -10,7 +10,9 @@ class CRUDCategoryScreen extends StatefulWidget {
   const CRUDCategoryScreen({super.key, this.category});
 
   @override
-  _CRUDCategoryScreenState createState() => _CRUDCategoryScreenState();
+  State<StatefulWidget> createState() {
+    return _CRUDCategoryScreenState();
+  }
 }
 
 class _CRUDCategoryScreenState extends State<CRUDCategoryScreen> {
@@ -42,18 +44,42 @@ class _CRUDCategoryScreenState extends State<CRUDCategoryScreen> {
               final name = _titleController.text.trim();
 
               if (widget.category == null) {
-                await ref.read(categoriesProvider.notifier).addCategory(
+                await ref
+                    .read(categoriesProvider.notifier)
+                    .addCategory(
                       name,
                       currentColor,
                       isFav,
+                    )
+                    .then(
+                  (_) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Category Added Successfully"),
+                        duration: Duration(seconds: 3),
+                      ),
                     );
+                  },
+                );
               } else {
-                await ref.read(categoriesProvider.notifier).editCategory(
+                await ref
+                    .read(categoriesProvider.notifier)
+                    .editCategory(
                       widget.category!.id,
                       name,
                       currentColor,
                       isFav,
+                    )
+                    .then(
+                  (_) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Category Updated Successfully"),
+                        duration: Duration(seconds: 3),
+                      ),
                     );
+                  },
+                );
               }
 
               Navigator.of(context).pop();

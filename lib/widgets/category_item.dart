@@ -34,14 +34,26 @@ class _CategoryItemState extends ConsumerState<CategoryItem> {
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (BuildContext context) {
-            return CRUDCategoryScreen(category: category,);
+            return CRUDCategoryScreen(
+              category: category,
+            );
           },
         ),
       );
     }
 
     Future<void> deleteCategory(Category category) {
-      return ref.read(categoriesProvider.notifier).deleteCategory(category.id);
+      return ref
+          .read(categoriesProvider.notifier)
+          .deleteCategory(category.id)
+          .then((_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Task Deleted Successfully"),
+            duration: Duration(seconds: 3),
+          ),
+        );
+      });
     }
 
     return ExpansionPanelList(

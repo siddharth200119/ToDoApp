@@ -8,58 +8,59 @@ class TasksNotifier extends StateNotifier<List<Task>> {
   TasksNotifier(this.supabase) : super([]);
 
   final SupabaseClient supabase;
+  int deletedIndex = -1;
+  Task? lastDeletedTask;
 
   Future<Task?> addTask(Map<String, dynamic> task) async {
-  final String uid = supabase.auth.currentUser!.id;
-  task["user_id"] = uid;
+    final String uid = supabase.auth.currentUser!.id;
+    task["user_id"] = uid;
 
-  // Extract categories and remove from the task map
-  final List<cat_model.Category>? categories = task["categories"];
-  task.remove("categories");
+    // Extract categories and remove from the task map
+    final List<cat_model.Category>? categories = task["categories"];
+    task.remove("categories");
 
-  // Convert due date to ISO format if it exists
-  if (task["dueDate"] != null && task["dueDate"] is DateTime) {
-    task["dueDate"] = task["dueDate"].toUtc().toIso8601String();
-  }
-
-  // Insert task into the tasks table
-  final response = await supabase.from('tasks').insert([task]).select();
-  final List<dynamic> data = response;
-
-  if (data.isNotEmpty) {
-    final taskJson = data[0];
-
-    // Insert task-category mappings into task_categories table
-    if (categories != null && categories.isNotEmpty) {
-      for (var category in categories) {
-        await supabase.from('task_categories').insert({
-          "task_id": taskJson["id"],
-          "category_id": category.id,
-          "user_id": uid,
-        });
-      }
+    // Convert due date to ISO format if it exists
+    if (task["dueDate"] != null && task["dueDate"] is DateTime) {
+      task["dueDate"] = task["dueDate"].toUtc().toIso8601String();
     }
 
-    // Create Task object from response with associated categories
-    final newTask = Task(
-      id: taskJson["id"],
-      title: taskJson["title"],
-      desc: taskJson["description"],
-      dueDate: taskJson["dueDate"] != null
-          ? DateTime.parse(taskJson["dueDate"]).toLocal()
-          : null,
-      isCompleted: false,
-      categories: categories ?? [], // Add the list of categories here
-    );
+    // Insert task into the tasks table
+    final response = await supabase.from('tasks').insert([task]).select();
+    final List<dynamic> data = response;
 
-    // Update state with new task
-    state = [newTask, ...state];
-    return newTask;
+    if (data.isNotEmpty) {
+      final taskJson = data[0];
+
+      // Insert task-category mappings into task_categories table
+      if (categories != null && categories.isNotEmpty) {
+        for (var category in categories) {
+          await supabase.from('task_categories').insert({
+            "task_id": taskJson["id"],
+            "category_id": category.id,
+            "user_id": uid,
+          });
+        }
+      }
+
+      // Create Task object from response with associated categories
+      final newTask = Task(
+        id: taskJson["id"],
+        title: taskJson["title"],
+        desc: taskJson["description"],
+        dueDate: taskJson["dueDate"] != null
+            ? DateTime.parse(taskJson["dueDate"]).toLocal()
+            : null,
+        isCompleted: false,
+        categories: categories ?? [], // Add the list of categories here
+      );
+
+      // Update state with new task
+      state = [newTask, ...state];
+      return newTask;
+    }
+
+    return null;
   }
-
-  return null;
-}
-
 
   Future<bool> updateTask(Task task, Map<String, dynamic> updates) async {
     try {
@@ -86,8 +87,7 @@ class TasksNotifier extends StateNotifier<List<Task>> {
 
       // Update task categories if present in updates
       if (categories != null) {
-        final List<cat_model.Category> updatedCategories =
-            categories;
+        final List<cat_model.Category> updatedCategories = categories;
         // Clear existing categories for this task
         await supabase.from('task_categories').delete().eq("task_id", task.id);
 
@@ -103,15 +103,14 @@ class TasksNotifier extends StateNotifier<List<Task>> {
 
       final updatedTaskJson = response[0];
       final updatedTask = Task(
-        id: updatedTaskJson["id"],
-        title: updatedTaskJson["title"],
-        desc: updatedTaskJson["description"],
-        dueDate: updatedTaskJson["dueDate"] != null
-            ? DateTime.parse(updatedTaskJson["dueDate"]).toLocal()
-            : null,
-        isCompleted: updatedTaskJson["isCompleted"] ?? false,
-        categories: categories ?? []
-      );
+          id: updatedTaskJson["id"],
+          title: updatedTaskJson["title"],
+          desc: updatedTaskJson["description"],
+          dueDate: updatedTaskJson["dueDate"] != null
+              ? DateTime.parse(updatedTaskJson["dueDate"]).toLocal()
+              : null,
+          isCompleted: updatedTaskJson["isCompleted"] ?? false,
+          categories: categories ?? []);
 
       state = state.map((t) => t.id == task.id ? updatedTask : t).toList();
 
@@ -134,7 +133,8 @@ class TasksNotifier extends StateNotifier<List<Task>> {
       final response = await supabase
           .from('tasks')
           .select('*, task_categories (category:categories (*))')
-          .eq('user_id', uid);
+          .eq('user_id', uid)
+          .neq("deleted", 1);
       final List<dynamic>? tasks = response as List<dynamic>?;
       if (tasks == null || tasks.isEmpty) {
         return [];
@@ -181,12 +181,44 @@ class TasksNotifier extends StateNotifier<List<Task>> {
 
   Future<bool> deleteTask(Task task) async {
     try {
-      await supabase.from('tasks').delete().eq('id', task.id);
+      // Save the index of the task being deleted
+      deletedIndex = state.indexWhere((t) => t.id == task.id);
+      lastDeletedTask = task;
+
+      await supabase.from('tasks').update({"deleted": 1}).eq('id', task.id);
 
       // Delete associated categories from task_categories
       await supabase.from('task_categories').delete().eq('task_id', task.id);
 
+      // Update the state to remove the task
       state = state.where((t) => t.id != task.id).toList();
+
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<bool> undoDelete() async {
+    if (lastDeletedTask == null) {
+      return false;
+    }
+
+    try {
+      // Restore the task in the database
+      await supabase.from('tasks').update({"deleted": 0}).eq('id', lastDeletedTask!.id);
+
+      // Restore associated categories in task_categories
+      await supabase.from('task_categories').update({"deleted": 0}).eq('task_id', lastDeletedTask!.id);
+
+      // Reinsert the task at the original index in the state
+      final updatedList = [...state];
+      updatedList.insert(deletedIndex, lastDeletedTask!);
+      state = updatedList;
+
+      // Reset deletedIndex and lastDeletedTask
+      deletedIndex = -1;
+      lastDeletedTask = null;
 
       return true;
     } catch (e) {

@@ -20,8 +20,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     {
       "title": "Today",
       "home": TasksList(
-        dueDateFilter: DateTime(DateTime.now().year, DateTime.now().month,
+        maxDateFilter: DateTime(DateTime.now().year, DateTime.now().month,
             DateTime.now().day, 23, 59, 59),
+        minDateFilter: DateTime(DateTime.now().year, DateTime.now().month,
+            DateTime.now().day, 00, 00, 00),
       ),
       "icon": const Icon(Icons.calendar_today_rounded),
       "label": "Today"

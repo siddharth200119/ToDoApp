@@ -20,10 +20,16 @@ class _CategoryPickerState extends ConsumerState<CategoryPicker> {
   final TextEditingController _searchController = TextEditingController();
   bool _showSuggestions = false;
   List<Category> suggestions = [];
+  late List<Category> selectedCategories;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedCategories = List.from(widget.selectedCategories ?? []);
+  }
 
   @override
   Widget build(BuildContext context) {
-    List<Category> selectedCategories = List.from(widget.selectedCategories ?? []);
     final List<Category> categories = ref.watch(categoriesProvider);
 
     void updateSuggestions(String keyword) {
@@ -76,9 +82,7 @@ class _CategoryPickerState extends ConsumerState<CategoryPicker> {
                             onTap: () {
                               setState(() {
                                 if (!selectedCategories.contains(suggestion)) {
-                                  print("sidd $selectedCategories");
-                                  selectedCategories.add(suggestion);
-                                  widget.callback(selectedCategories);
+                                  selectedCategories = [suggestion, ...selectedCategories];
                                 }
                                 _searchController.clear();
                                 _showSuggestions = false;
@@ -132,7 +136,6 @@ class _CategoryPickerState extends ConsumerState<CategoryPicker> {
                       TextButton(
                         onPressed: () {
                           widget.callback(selectedCategories);
-                          Navigator.of(context).pop();
                         },
                         child: const Text('Confirm'),
                       ),

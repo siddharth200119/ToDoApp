@@ -47,10 +47,22 @@ class _AddTaskState extends ConsumerState<AddTask> {
       widget.formKey.currentState!.save();
       result["dueDate"] = selectedDate;
       result["categories"] = categories;
-      if(widget.task == null){
+      if (widget.task == null) {
         ref.read(tasksProvider.notifier).addTask(result);
-      }else{
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Task Added Successfully"),
+            duration: Duration(seconds: 3),
+          ),
+        );
+      } else {
         ref.read(tasksProvider.notifier).updateTask(widget.task!, result);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Task Updated Successfully"),
+            duration: Duration(seconds: 3),
+          ),
+        );
       }
       Navigator.of(context).pop();
     }
@@ -134,7 +146,7 @@ class _AddTaskState extends ConsumerState<AddTask> {
                   onSaved: (value) {
                     result["title"] = value;
                   },
-                  initialValue: widget.task?.title,  // Prefill title
+                  initialValue: widget.task?.title, // Prefill title
                 ),
                 TextFormField(
                   decoration: const InputDecoration(
@@ -148,7 +160,7 @@ class _AddTaskState extends ConsumerState<AddTask> {
                   onSaved: (value) {
                     result["description"] = value;
                   },
-                  initialValue: widget.task?.desc,  // Prefill description
+                  initialValue: widget.task?.desc, // Prefill description
                 ),
                 SizedBox(
                   width: double.infinity,
@@ -168,7 +180,7 @@ class _AddTaskState extends ConsumerState<AddTask> {
                             });
                           },
                         ),
-                  
+
                       // Categories Chips
                       if (categories != null && categories!.isNotEmpty)
                         ...categories!.map((category) {

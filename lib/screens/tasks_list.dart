@@ -6,12 +6,14 @@ import 'package:todo_app/widgets/task_item.dart';
 
 class TasksList extends ConsumerStatefulWidget {
   final int? categoryIdFilter;
-  final DateTime? dueDateFilter;
+  final DateTime? minDateFilter;
+  final DateTime? maxDateFilter;
 
   const TasksList({
     super.key,
     this.categoryIdFilter,
-    this.dueDateFilter,
+    this.minDateFilter,
+    this.maxDateFilter,
   });
 
   @override
@@ -33,10 +35,13 @@ class _TasksListState extends ConsumerState<TasksList> {
       bool matchesCategory = widget.categoryIdFilter == null ||
           (task.categories.any((category) => category.id == widget.categoryIdFilter));
 
-      bool matchesDueDate = widget.dueDateFilter == null ||
-          (task.dueDate != null && task.dueDate!.isBefore(widget.dueDateFilter!) || task.dueDate == null);
-      
-      return matchesCategory && matchesDueDate;
+      bool matchesMinDate = widget.minDateFilter == null ||
+          (task.dueDate != null && task.dueDate!.isAfter(widget.minDateFilter!)) || task.dueDate == null;
+
+      bool matchesMaxDate = widget.maxDateFilter == null ||
+          (task.dueDate != null && task.dueDate!.isBefore(widget.maxDateFilter!)) || task.dueDate == null;
+
+      return matchesCategory &&  matchesMinDate && matchesMaxDate;
     }).toList();
 
     // Separate and sort tasks
