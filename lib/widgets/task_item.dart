@@ -24,7 +24,8 @@ class TaskItem extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final dueDate = task.dueDate;
-
+    final taskNotifier = ref.read(tasksProvider.notifier);
+    
     String displayDateTime;
     TextStyle dateTimeStyle;
 
@@ -58,7 +59,7 @@ class TaskItem extends ConsumerWidget {
         key: Key(task.id.toString()),
         confirmDismiss: (direction) async {
           if (direction == DismissDirection.endToStart) {
-            ref.read(tasksProvider.notifier).deleteTask(task);
+            taskNotifier.deleteTask(task);
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: const Text("Task Deleted Successfully"),
@@ -66,16 +67,14 @@ class TaskItem extends ConsumerWidget {
                 action: SnackBarAction(
                   label: "Undo",
                   onPressed: () {
-                    ref.read(tasksProvider.notifier).undoDelete();
+                    taskNotifier.undoDelete();
                   },
                 ),
               ),
             );
             return true;
           } else if (direction == DismissDirection.startToEnd) {
-            ref
-                .read(tasksProvider.notifier)
-                .updateTask(task, {"isCompleted": !task.isCompleted});
+            taskNotifier.updateTask(task, {"isCompleted": !task.isCompleted});
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(!task.isCompleted
@@ -133,9 +132,7 @@ class TaskItem extends ConsumerWidget {
                     shape: const CircleBorder(),
                     value: task.isCompleted,
                     onChanged: (newVal) {
-                      ref
-                          .read(tasksProvider.notifier)
-                          .updateTask(task, {"isCompleted": newVal});
+                      taskNotifier.updateTask(task, {"isCompleted": newVal});
                     },
                   ),
                 ),
