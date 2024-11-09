@@ -54,8 +54,8 @@ ThemeData _buildLightTheme() {
       surface: Colors.grey[200]!,
     ),
     textTheme: GoogleFonts.ubuntuTextTheme(base.textTheme).copyWith(
-      displayLarge: const TextStyle(fontSize: 72, fontWeight: FontWeight.bold, color: Colors.blueAccent),
-      titleLarge: const TextStyle(fontSize: 30, fontStyle: FontStyle.normal, color: Colors.black87),
+      displayLarge: const TextStyle(fontSize: 52, fontWeight: FontWeight.bold, color: Colors.blueAccent),
+      titleLarge: const TextStyle(fontSize: 26, fontStyle: FontStyle.normal, color: Colors.black87),
     ),
     chipTheme: ChipThemeData(
       backgroundColor: Colors.blue[100]!,

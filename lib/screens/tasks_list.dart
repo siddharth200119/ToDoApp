@@ -8,12 +8,14 @@ class TasksList extends ConsumerStatefulWidget {
   final int? categoryIdFilter;
   final DateTime? minDateFilter;
   final DateTime? maxDateFilter;
+  final bool showPendingTasks;
 
   const TasksList({
     super.key,
     this.categoryIdFilter,
     this.minDateFilter,
     this.maxDateFilter,
+    this.showPendingTasks = false
   });
 
   @override
@@ -41,7 +43,9 @@ class _TasksListState extends ConsumerState<TasksList> {
       bool matchesMaxDate = widget.maxDateFilter == null ||
           (task.dueDate != null && task.dueDate!.isBefore(widget.maxDateFilter!)) || task.dueDate == null;
 
-      return matchesCategory &&  matchesMinDate && matchesMaxDate;
+      bool showPendingTask = widget.showPendingTasks && !task.isCompleted && task.dueDate != null && task.dueDate!.isBefore(DateTime.now());
+
+      return matchesCategory &&  matchesMinDate && matchesMaxDate || showPendingTask;
     }).toList();
 
     // Separate and sort tasks

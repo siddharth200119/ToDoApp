@@ -24,6 +24,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             DateTime.now().day, 23, 59, 59),
         minDateFilter: DateTime(DateTime.now().year, DateTime.now().month,
             DateTime.now().day, 00, 00, 00),
+        showPendingTasks: true,
       ),
       "icon": const Icon(Icons.calendar_today_rounded),
       "label": "Today"
